@@ -1,5 +1,7 @@
 build/
 qcat
+qcat?
 qzip
+qzip?
 qunzip
-*.o
+qunzip?
