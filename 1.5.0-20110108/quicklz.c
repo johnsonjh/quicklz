@@ -17,11 +17,11 @@
 # error quicklz.c and quicklz.h have different versions
 #endif /* if QLZ_VERSION_MAJOR != 1 || QLZ_VERSION_MINOR != 5 || QLZ_VERSION_REVISION != 0 */
 
-#if ( defined( __X86__ ) || defined( __i386__ ) || defined( i386 )     \
-  || defined( _M_IX86 ) || defined( __386__ ) || defined( __x86_64__ ) \
+#if ( defined( __X86__ ) || defined( __i386__ ) || defined( i386 )       \
+  || defined( _M_IX86 )  || defined( __386__ )  || defined( __x86_64__ ) \
   || defined( _M_X64 ))
 # define X86X64
-#endif /* if ( defined( __X86__ ) || defined( __i386__ ) || defined( i386 ) || defined( _M_IX86 ) || defined( __386__ ) || defined( __x86_64__ ) || defined( _M_X64 )) */
+#endif
 
 #define MINOFFSET                2
 #define UNCONDITIONAL_MATCHLEN   6

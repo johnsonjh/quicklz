@@ -1,23 +1,25 @@
-/**
- * qzip, a gzip-like command-line tool for compressing and decompressing
- * quicklz files (.qz).
- *
- * stream_compress/stream_decompress are borrowed from the quicklz demos.
+/*
+ * qzip -- command-line tool for compressing
+ *          and decompressing quicklz files.
  */
 
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
 
-#define QLZ_COMPRESSION_LEVEL 3
-#define QLZ_STREAMING_BUFFER  1000000
 #include "quicklz.h"
+
+#define STRINGIFY(x) #x
+#define TOSTRING(x) STRINGIFY(x)
 
 #if QLZ_STREAMING_BUFFER == 0
 # error Define QLZ_STREAMING_BUFFER to a non-zero value for this application
 #endif /* if QLZ_STREAMING_BUFFER == 0 */
 
-// 1 MB Buffer
+#define QLZ_STREAMING_BUFFER_STRING  TOSTRING(QLZ_STREAMING_BUFFER)
+#define QLZ_COMPRESSION_LEVEL_STRING TOSTRING(QLZ_COMPRESSION_LEVEL)
+
+/* 1 MB Buffer */
 #define MAX_BUF_SIZE   1024 * 1024
 #define BUF_BUFFER     400
 
@@ -26,13 +28,14 @@
 #define false          0
 
 static char doc[]
-  = "qzip/qunzip - A gzip-like program which uses quicklz compression.\n"
-    "\n"
-    "Examples:\n"
-    "  qzip < infile > outfile.qz\n"
-    "  qunzip file.qz\n"
-    "  qzip file\n"
-    "  qcat file.qz\n";
+  = "qzip" QLZ_COMPRESSION_LEVEL_STRING
+    " - quicklz level " QLZ_COMPRESSION_LEVEL_STRING
+    " compressor/decompressor\n\n"
+    "  Usage:\n"
+    "         qzip < infile > outfile.qz" QLZ_COMPRESSION_LEVEL_STRING "\n"
+    "         qunzip file.qz" QLZ_COMPRESSION_LEVEL_STRING "\n"
+    "         qzip file\n"
+    "         qcat file.qz" QLZ_COMPRESSION_LEVEL_STRING "\n\n";
 
 static char *progname;
 
@@ -141,8 +144,7 @@ abort_if_exists(char *fn)
   // Check if the file already exists. If it does, abort.
   if (( f = fopen(fn, "rb")) != NULL)
     {
-      fprintf(
-        stderr,
+      fprintf(stderr,
         "%s: File already exists. Will not overwrite '%s'\n",
         progname,
         fn);
@@ -157,7 +159,7 @@ move_to_final(char *tmp, char *dst)
   abort_if_exists(dst);
   if (rename(tmp, dst) < 0)
     {
-      fprintf(stderr, "%s:Unable to rename output file '%s'", progname, dst);
+      fprintf(stderr, "%s: Unable to rename output file '%s'", progname, dst);
       perror(progname);
       exit(2);
     }
@@ -168,12 +170,8 @@ main(int argc, char *argv[])
 {
   bool   do_compress          = false;
   bool   to_stdout            = false;
-  char   fn_buffer[1024]      = {
-    '\0'
-  };
-  char   tmp_fn_buffer[1024]  = {
-    '\0'
-  };
+  char   fn_buffer[1024]      = { '\0' };
+  char   tmp_fn_buffer[1024]  = { '\0' };
   FILE * ifile;
   FILE * ofile;
   char * progname_iter;
@@ -185,15 +183,15 @@ main(int argc, char *argv[])
       progname = progname_iter;
     }
 
-  if (strcmp(progname, "qzip") == 0)
+  if (strcmp(progname, "qzip" QLZ_COMPRESSION_LEVEL_STRING) == 0)
     {
       do_compress = true;
     }
-  else if (strcmp(progname, "qunzip") == 0)
+  else if (strcmp(progname, "qunzip" QLZ_COMPRESSION_LEVEL_STRING) == 0)
     {
       do_compress = false;
     }
-  else if (strcmp(progname, "qcat") == 0)
+  else if (strcmp(progname, "qcat" QLZ_COMPRESSION_LEVEL_STRING) == 0)
     {
       do_compress  = false;
       to_stdout    = true;
@@ -206,9 +204,10 @@ main(int argc, char *argv[])
 
   if (argc == 2)
     {
-      if (( strcmp(argv[1], "-h") == 0 ) || ( strcmp(argv[1], "-?") == 0 )
-          || ( strcmp(argv[1], "--help") == 0 )
-          || ( strcmp(argv[1], "-help") == 0 ))
+      if (( strcmp(argv[1], "-h")     == 0 )
+       || ( strcmp(argv[1], "-?")     == 0 )
+       || ( strcmp(argv[1], "--help") == 0 )
+       || ( strcmp(argv[1], "-help")  == 0 ))
         {
           usage();
         }
@@ -229,8 +228,12 @@ main(int argc, char *argv[])
           // Compress
           if (argc > 1)
             {
-              sprintf(fn_buffer, "%s.qz", argv[file_index]);
-              sprintf(tmp_fn_buffer, "%s.qz.%d", argv[file_index], getpid());
+              sprintf(fn_buffer,
+                      "%s.qz" QLZ_COMPRESSION_LEVEL_STRING,
+                      argv[file_index]);
+              sprintf(tmp_fn_buffer,
+                      "%s.qz" QLZ_COMPRESSION_LEVEL_STRING ".%d",
+                      argv[file_index], getpid());
 
               abort_if_exists(fn_buffer);
               abort_if_exists(tmp_fn_buffer);
@@ -275,8 +278,7 @@ main(int argc, char *argv[])
 
               if (err)
                 {
-                  fprintf(
-                    stderr,
+                  fprintf(stderr,
                     "%s: File does not end in '.qz': '%s'\n",
                     progname,
                     argv[file_index]);
@@ -285,8 +287,7 @@ main(int argc, char *argv[])
 
               if (!to_stdout)
                 {
-                  strncpy(
-                    fn_buffer,
+                  strncpy(fn_buffer,
                     argv[file_index],
                     strlen(argv[file_index]) - 3);
                   sprintf(tmp_fn_buffer, "%s.%d", fn_buffer, getpid());
@@ -341,8 +342,7 @@ main(int argc, char *argv[])
           move_to_final(tmp_fn_buffer, fn_buffer);
           if (unlink(argv[file_index]) < 0)
             {
-              fprintf(
-                stderr,
+              fprintf(stderr,
                 "%s: Unable to unlink original file '%s'\n",
                 progname,
                 argv[1]);
