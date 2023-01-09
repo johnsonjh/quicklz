@@ -36,7 +36,7 @@ qcat_3: ; +@$(MAKE) --no-print-directory qcat3 qzip3 qunzip3 LEVEL=3
 
 qcat$(LEVEL): qzip.c quicklz.c quicklz.h
 	-@printf '\n  %s\n\n' "***** Building level $(LEVEL) binary *****"
-	$(CC) $(CLFLAGS)      \
+	$(CC) $(CLFLAGS)     \
 		$(QZFLAGS)  \
 		-DQLZ_COMPRESSION_LEVEL=$(LEVEL)       \
 		qzip.c quicklz.c -o qcat$(LEVEL)
