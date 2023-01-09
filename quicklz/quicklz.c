@@ -281,7 +281,7 @@ memcpy_up(unsigned char *dst, const unsigned char *src, ui32 n)
     ui32 f = 0;
     do
       {
-        *(ui32 *)( dst + f )  = *(ui32 *)( src + f );
+        *(ui32 *)( dst + f )   = *(ui32 *)( src + f );
         f                     += MINOFFSET + 1;
       }
     while (f < n);
@@ -356,10 +356,10 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
 
           fast_write(( cword_val >> 1 ) | ( 1U << 31 ), cword_ptr, CWORD_LEN);
 
-          cword_ptr  = dst;
+          cword_ptr   = dst;
           dst        += CWORD_LEN;
-          cword_val  = 1U << 31;
-          fetch      = fast_read(src, 3);
+          cword_val   = 1U << 31;
+          fetch       = fast_read(src, 3);
         }
 
 #if QLZ_COMPRESSION_LEVEL == 1
@@ -387,8 +387,8 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
               {
 # endif /* ifdef X86X64 */
                 size_t matchlen = 3;
-                hash       <<= 4;
-                cword_val  = ( cword_val >> 1 ) | ( 1U << 31 );
+                hash          <<= 4;
+                cword_val       = ( cword_val >> 1 ) | ( 1U << 31 );
 
 # if defined X86X64 && defined QLZ_PTR_64
                   {
@@ -416,7 +416,7 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
                         matchlen += sizeof ( c );
                         while (
                                 src[matchlen] == o[matchlen]
-                                  && matchlen < remaining)
+                                 && matchlen < remaining)
                           {
                             matchlen++;
                           }
@@ -442,7 +442,7 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
                       matchlen++;
                       while (
                               src[matchlen] == o[matchlen]
-                                && matchlen < remaining)
+                               && matchlen < remaining)
                         {
                           matchlen++;
                         }
@@ -563,7 +563,7 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
                         = src + u;
                   }
 
-                cword_val  = ( cword_val >> 1 ) | ( 1U << 31 );
+                cword_val   = ( cword_val >> 1 ) | ( 1U << 31 );
                 src        += matchlen;
 
                 if (matchlen == 3 && offset <= 63)
@@ -575,7 +575,7 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
                   {
                     ui32 f = (ui32)(( offset << 2 ) | 1 );
                     fast_write(f, dst, 2);
-                    dst += 2;
+                    dst   += 2;
                   }
                 else if (matchlen <= 18 && offset <= 1023)
                   {
@@ -611,20 +611,20 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
 
             if (matchlen > 2)
               {
-                cword_val  = ( cword_val >> 1 ) | ( 1U << 31 );
+                cword_val   = ( cword_val >> 1 ) | ( 1U << 31 );
                 src        += matchlen;
 
                 if (matchlen < 10)
                   {
                     ui32 f = best_k | (( matchlen - 2 ) << 2 ) | ( hash << 5 );
                     fast_write(f, dst, 2);
-                    dst += 2;
+                    dst   += 2;
                   }
                 else
                   {
                     ui32 f = best_k | ( matchlen << 16 ) | ( hash << 5 );
                     fast_write(f, dst, 3);
-                    dst += 3;
+                    dst   += 3;
                   }
               }
             else
@@ -644,9 +644,9 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
       if (( cword_val & 1 ) == 1)
         {
           fast_write(( cword_val >> 1 ) | ( 1U << 31 ), cword_ptr, CWORD_LEN);
-          cword_ptr  = dst;
+          cword_ptr   = dst;
           dst        += CWORD_LEN;
-          cword_val  = 1U << 31;
+          cword_val   = 1U << 31;
         }
 
 #if QLZ_COMPRESSION_LEVEL < 3
@@ -709,9 +709,7 @@ qlz_decompress_core(const unsigned char *source, unsigned char *destination,
   const unsigned char * last_source_byte
      = source + qlz_size_compressed((const char *)source) - 1;
   static const ui32     bitlut[16]
-     = {
-    4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0
-    };
+     = { 4, 0, 1, 0, 2, 0, 1, 0, 3, 0, 1, 0, 2, 0, 1, 0 };
 
   (void)last_source_byte;
   (void)last_hashed;
@@ -730,7 +728,7 @@ qlz_decompress_core(const unsigned char *source, unsigned char *destination,
                 return 0;
               }
 #endif /* ifdef QLZ_MEMORY_SAFE */
-          cword_val  = fast_read(src, CWORD_LEN);
+          cword_val   = fast_read(src, CWORD_LEN);
           src        += CWORD_LEN;
         }
 
@@ -759,12 +757,12 @@ qlz_decompress_core(const unsigned char *source, unsigned char *destination,
 
             if (( fetch & 0xf ) != 0)
               {
-                matchlen  = ( fetch & 0xf ) + 2;
+                matchlen   = ( fetch & 0xf ) + 2;
                 src       += 2;
               }
             else
               {
-                matchlen  = *( src + 2 );
+                matchlen   = *( src + 2 );
                 src       += 3;
               }
 
@@ -778,12 +776,12 @@ qlz_decompress_core(const unsigned char *source, unsigned char *destination,
 
             if (( fetch & ( 28 )) != 0)
               {
-                matchlen  = (( fetch >> 2 ) & 0x7 ) + 2;
+                matchlen   = (( fetch >> 2 ) & 0x7 ) + 2;
                 src       += 2;
               }
             else
               {
-                matchlen  = *( src + 2 );
+                matchlen   = *( src + 2 );
                 src       += 3;
               }
 
@@ -798,26 +796,26 @@ qlz_decompress_core(const unsigned char *source, unsigned char *destination,
               }
             else if (( fetch & 2 ) == 0)
               {
-                offset    = ( fetch & 0xffff ) >> 2;
-                matchlen  = 3;
+                offset     = ( fetch & 0xffff ) >> 2;
+                matchlen   = 3;
                 src       += 2;
               }
             else if (( fetch & 1 ) == 0)
               {
-                offset    = ( fetch & 0xffff ) >> 6;
-                matchlen  = (( fetch >> 2 ) & 15 ) + 3;
+                offset     = (  fetch & 0xffff ) >> 6;
+                matchlen   = (( fetch >> 2 ) & 15 ) + 3;
                 src       += 2;
               }
             else if (( fetch & 127 ) != 3)
               {
-                offset    = ( fetch >> 7 ) & 0x1ffff;
-                matchlen  = (( fetch >> 2 ) & 0x1f ) + 2;
+                offset     = (  fetch >> 7 ) & 0x1ffff;
+                matchlen   = (( fetch >> 2 ) & 0x1f ) + 2;
                 src       += 3;
               }
             else
               {
-                offset    = ( fetch >> 15 );
-                matchlen  = (( fetch >> 7 ) & 255 ) + 3;
+                offset     = (  fetch >> 15 );
+                matchlen   = (( fetch >> 7 ) & 255 ) + 3;
                 src       += 4;
               }
 
@@ -855,7 +853,7 @@ qlz_decompress_core(const unsigned char *source, unsigned char *destination,
 #else  /* ifdef X86X64 */
                 memcpy_up(dst, src, 4);
 #endif /* ifdef X86X64 */
-              cword_val  = cword_val >> n;
+              cword_val   = cword_val >> n;
               dst        += n;
               src        += n;
 #if QLZ_COMPRESSION_LEVEL <= 2
@@ -869,7 +867,7 @@ qlz_decompress_core(const unsigned char *source, unsigned char *destination,
                   if (cword_val == 1)
                     {
                       src        += CWORD_LEN;
-                      cword_val  = 1U << 31;
+                      cword_val   = 1U << 31;
                     }
 
 #ifdef QLZ_MEMORY_SAFE
@@ -889,7 +887,7 @@ qlz_decompress_core(const unsigned char *source, unsigned char *destination,
                   state,
                   &last_hashed,
                   last_destination_byte
-                  - 3);                   // todo, use constant
+                    - 3); // TODO: Use constant
 #endif /* if QLZ_COMPRESSION_LEVEL <= 2 */
               return size;
             }
