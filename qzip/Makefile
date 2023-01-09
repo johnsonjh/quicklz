@@ -25,15 +25,17 @@ PYTHON ?= python
 ###############################################################################
 # Build variants
 
-qcat_1: ; +$(MAKE) qcat1 qzip1 qunzip1 LEVEL=1
-qcat_2: ; +$(MAKE) qcat2 qzip2 qunzip2 LEVEL=2
-qcat_3: ; +$(MAKE) qcat3 qzip3 qunzip3 LEVEL=3
+qcat_1: ; +@$(MAKE) --no-print-directory qcat1 qzip1 qunzip1 LEVEL=1
+qcat_2: ; +@$(MAKE) --no-print-directory qcat2 qzip2 qunzip2 LEVEL=2
+qcat_3: ; +@$(MAKE) --no-print-directory qcat3 qzip3 qunzip3 LEVEL=3
 
 ###############################################################################
 # qcat
 
 qcat$(LEVEL): \
 	qzip.c quicklz.c quicklz.h
+	-@printf '\n  %s\n\n' \
+	  "***** Building level $(LEVEL) binary *****"
 	$(CC) $(CLFLAGS)      \
 		$(QZFLAGS)  \
 		-DQLZ_COMPRESSION_LEVEL=$(LEVEL)       \
@@ -61,21 +63,22 @@ python quicklz.so: quicklz.o distutils
 ###############################################################################
 # Test target
 
-.PHONY: q_test test check
+.PHONY: test check
 test check: $(OUTPUT) quicklz.c
-	+@$(MAKE) q_test ||                          \
-	  {                                          \
-	    printf '\n  %s\n\n'                      \
-	      "***** ERROR! TESTS FAILED! *****" &&  \
-	    exit 1;                                  \
-	  };                                         \
-	exit 0
+	+@$(MAKE) q_test --no-print-directory ||       \
+	  {                                            \
+	     printf '\n  %s\n\n'                       \
+	       "***** ERROR!! TESTS FAILED!! *****" && \
+	     exit 1;                                   \
+	  }; exit 0
 
 ###############################################################################
 # Test script
 
-q_test: $(OUTPUT) quicklz.c
-	+$(MAKE) all
+.PHONY: q_test
+q_test: quicklz.c
+	-@printf '\n  %s\n\n' \
+	  "***** Starting verification tests *****"
 	CKSUM=`cksum < quicklz.c` &&            \
 	      ./qzip1 < quicklz.c | ./qcat1 |   \
 	      cksum | grep -q "^$${CKSUM}$$" &&   \
@@ -83,7 +86,7 @@ q_test: $(OUTPUT) quicklz.c
 	      cksum | grep -q "^$${CKSUM}$$" &&   \
 	      ./qzip3 < quicklz.c | ./qcat3 |   \
 	      cksum | grep -q "^$${CKSUM}$$"
-	@printf '\n  %s\n\n' \
+	-@printf '\n  %s\n\n' \
 	  "***** Tests completed successfully! *****"
 
 ###############################################################################
@@ -94,8 +97,12 @@ ifneq (,$(findstring clean,$(MAKECMDGOALS)))
 .NOTPARALLEL: clean distclean
 endif
 clean distclean:
+	-@printf '\n  %s\n\n' \
+	  "***** Starting source tree clean-up *****"
 	-$(RM) -r build/
 	-$(RM) qcat? qzip? qunzip? *.so *.o      \
 		*.bak *~ core *.core
+	-@printf '\n  %s\n\n' \
+	  "***** Cleaning completed successfully! *****"
 
 ###############################################################################
