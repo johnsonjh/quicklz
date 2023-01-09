@@ -5,3 +5,4 @@ qzip
 qzip?
 qunzip
 qunzip?
+*.o
