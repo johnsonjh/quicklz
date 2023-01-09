@@ -58,7 +58,7 @@ qunzip$(LEVEL): qzip$(LEVEL)
 
 .PHONY: python
 python quicklz.so: quicklz.o distutils
-	env CFLAGS="$(CFLAGS) -Wno-int-conversion" $(PYTHON) distutils build
+	env CFLAGS="$(CLFLAGS) -Wno-int-conversion" $(PYTHON) distutils build
 
 ###############################################################################
 # Test target
