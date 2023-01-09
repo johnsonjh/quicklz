@@ -1,7 +1,7 @@
 ###############################################################################
 # Targets
 
-OUTPUT := qcat_1 qcat_2 qcat_3
+OUTPUT := | qcat_1 qcat_2 qcat_3
 .PHONY: $(OUTPUT) all
 all:    $(OUTPUT)
 
@@ -58,7 +58,7 @@ qunzip$(LEVEL): qzip$(LEVEL)
 
 .PHONY: python
 python quicklz.so: quicklz.o distutils
-	$(PYTHON) distutils build
+	env CFLAGS="$(CFLAGS) -Wno-int-conversion" $(PYTHON) distutils build
 
 ###############################################################################
 # Test target
