@@ -98,7 +98,7 @@ ifneq (,$(findstring clean,$(MAKECMDGOALS)))
 endif
 clean distclean:
 	-@printf '\n  %s\n\n' \
-	  "***** Starting source tree clean-up *****"
+	  "***** Starting source tree cleaning *****"
 	-$(RM) -r build/
 	-$(RM) qcat? qzip? qunzip? *.so *.o      \
 		*.bak *~ core *.core
