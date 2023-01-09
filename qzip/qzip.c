@@ -137,7 +137,7 @@ stream_decompress(FILE *ifile, FILE *ofile)
 void
 usage()
 {
-  fprintf(stderr, doc);
+  fprintf(stderr, "%s", doc);
   exit(1);
 }
 
