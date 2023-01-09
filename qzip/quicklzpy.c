@@ -1,7 +1,7 @@
 /*
- *  This is a python module to access to compression and decompression
- *  in the QuickLZ library. This module only provides a few entry points from
- *  Python:
+ *  This is a python module to access to compression and
+ *  decompression in the QuickLZ library. This module only
+ *  provides a few entry points from Python:
  *
  *  The main functions:
  *      qlz_compress()
