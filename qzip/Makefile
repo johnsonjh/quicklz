@@ -8,10 +8,12 @@ all:    $(OUTPUT)
 ###############################################################################
 # Configuration: Build
 
-OPFLAGS ?= -Ofast
-QZFLAGS ?= -DQLZ_STREAMING_BUFFER=1000000
-CLFLAGS ?= $(OPFLAGS) -flto=auto -march=native
-#CLFLAGS += -DQLZ_MEMORY_SAFE=1
+ifdef SAFE
+  SFFLAGS := -DQLZ_MEMORY_SAFE=1
+endif
+OPFLAGS   ?= -Ofast
+QZFLAGS   ?= -DQLZ_STREAMING_BUFFER=1000000
+CLFLAGS   ?= $(OPFLAGS) -flto=auto -march=native $(SFFLAGS)
 
 ###############################################################################
 # Configuration: Tools
