@@ -44,7 +44,7 @@ class QuickLZFile(io.BufferedIOBase):
 
         if mode[0:1] == 'r':
             self.mode = READ
-            
+
             # Buffer data read from quicklz file. extrastart is offset in
             # stream where buffer starts. extrasize is number of
             # bytes remaining in buffer from current stream position.
@@ -82,10 +82,10 @@ class QuickLZFile(io.BufferedIOBase):
     def write(self, data):
         if self.mode != WRITE:
             import errno
-            raise IOError(errno.EBADF, "write() on read-only QuickLZFile object")
+            raise IOError(errno.EBADF, "write on read-only QuickLZFile object")
 
         if self.fileobj is None:
-            raise ValueError, "write() on closed QuickLZFile object"
+            raise ValueError, "write on closed QuickLZFile object"
 
         if hasattr(data, "tobytes"):
             assert isinstance(data, memoryview)
@@ -101,7 +101,7 @@ class QuickLZFile(io.BufferedIOBase):
     def read(self, size=-1):
         if self.mode != READ:
             import errno
-            raise IOError(errno.EBADF, "read() on write-only QuickLZFile object")
+            raise IOError(errno.EBADF, "read on write-only QuickLZFile object")
 
         if self.readbufsize <= 0 and self.fileobj is None:
             raise EOFError, "Reached EOF"
@@ -119,7 +119,7 @@ class QuickLZFile(io.BufferedIOBase):
                 size = self.extrasize
         else:               # just get some more of it
             try:
-                while size > self.extrasize: #XXX: TODO: edit here
+                while size > self.extrasize: # XXX: TODO: edit here
                     self._read(readsize)
                     readsize = min(self.max_read_chunk, readsize * 2)
             except EOFError:
@@ -132,5 +132,3 @@ class QuickLZFile(io.BufferedIOBase):
 
         self.offset += size
         return chunk
-
-

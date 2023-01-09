@@ -1075,6 +1075,7 @@ qlz_decompress(const char *source, void *destination,
           }
         else
           {
+
            /*
             * if(csiz != dsiz + qlz_size_header(source))
             *     return 0;
