@@ -274,8 +274,12 @@ qlz_size_header(const char *source)
 static __inline void
 memcpy_up(unsigned char *dst, const unsigned char *src, ui32 n)
 {
-  // Caution if modifying memcpy_up!
-  // Overlap of dst and src must be special handled.
+
+  /*
+   * Caution if modifying memcpy_up!
+   * Overlap of dst and src must be special handled.
+   */
+
 #ifndef X86X64
     unsigned char *end = dst + n;
     while (dst < end)
@@ -355,7 +359,7 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
     {
       if (qlz_unlikely(( cword_val & 1 ) == 1))
         {
-          // store uncompressed if compression ratio is too low
+          /* Store uncompressed if compression ratio is too low */
           if (src > source + ( size >> 1 )
               && dst - destination > src - source - (( src - source ) >> 5 ))
             {
@@ -367,9 +371,9 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
           cword_ptr   = dst;
           dst        += CWORD_LEN;
           cword_val   = 1U << 31;
-	  (void)cword_val;
+          (void)cword_val;
           fetch       = fast_read(src, 3);
-	  (void)fetch;
+          (void)fetch;
         }
 
 #if QLZ_COMPRESSION_LEVEL == 1
@@ -548,17 +552,17 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
 # endif /* if QLZ_COMPRESSION_LEVEL == 3 */
                     {
                       offset2   = o;
-		      (void)offset2;
+                      (void)offset2;
                       matchlen  = m;
-		      (void)matchlen;
+                      (void)matchlen;
                       best_k    = k;
-		      (void)best_k;
+                      (void)best_k;
                     }
                 }
             }
 
           o                                                   = offset2;
-	  (void)o;
+          (void)o;
           state->hash[hash].offset[c & ( QLZ_POINTERS - 1 )]  = src;
           c++;
           state->hash_counter[hash]                           = c;
@@ -696,8 +700,11 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
 
   fast_write(( cword_val >> 1 ) | ( 1U << 31 ), cword_ptr, CWORD_LEN);
 
-  // min. size must be 9 bytes so that the qlz_size functions can take 9 bytes
-  // as argument
+  /*
+   * Minimum size must be 9 bytes so that the qlz_size
+   * functions can take 9 bytes as argument.
+   */
+
   return dst - destination < 9 ? 9 : dst - destination;
 }
 
@@ -901,7 +908,7 @@ qlz_decompress_core(const unsigned char *source, unsigned char *destination,
                   state,
                   &last_hashed,
                   last_destination_byte
-                    - 3); // TODO: Use constant
+                    - 3); /* TODO: Use constant */
 #endif /* if QLZ_COMPRESSION_LEVEL <= 2 */
               return size;
             }
@@ -1009,8 +1016,10 @@ qlz_compress(const void *source, char *destination, size_t size,
                                : ( QLZ_STREAMING_BUFFER == 1000000 ? 2 : 3 )))
                    << 4 );
 
-  // 76543210
-  // 01SSLLHC
+  /*
+   * 76543210
+   * 01SSLLHC
+   */
 
   return r;
 }
@@ -1066,8 +1075,10 @@ qlz_decompress(const char *source, void *destination,
           }
         else
           {
-            //  if(csiz != dsiz + qlz_size_header(source))
-            //          return 0;
+           /*
+            * if(csiz != dsiz + qlz_size_header(source))
+            *     return 0;
+            */
 
             memcpy(dst, source + qlz_size_header(source), dsiz);
             reset_table_decompress(state);

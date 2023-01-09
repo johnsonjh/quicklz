@@ -30,23 +30,32 @@ main(int argc, char *argv[])
   qlz_state_decompress * state_decompress
     = (qlz_state_decompress *)malloc(sizeof ( qlz_state_decompress ));
 
-  // read source file
+  /* Read source file */
   ifile  = fopen(argv[1], "rb");
   ofile  = fopen(argv[2], "wb");
 
-  // a compressed packet can be at most "uncompressed size" + 400 bytes large
-  // where "uncompressed size" = 10000 in worst case in this sample demo
+  /*
+   * Acompressed packet can be at most "uncompressed size" + 400 bytes large
+   * where "uncompressed size" = 10000 in worst case in this sample demo.
+   */
+
   file_data = (char *)malloc(10000 + 400);
 
-  // allocate decompression buffer
+  /* Allocate decompression buffer */
   decompressed = (char *)malloc(10000);
 
-  // allocate and initially zero out the scratch buffer. After this, make sure
-  // it is preserved across calls and never modified manually
+  /*
+   * Allocate and initially zero out the scratch buffer. After this,
+   * make sure it is preserved across calls and never modified manually.
+   */
+
   memset(state_decompress, 0, sizeof ( qlz_state_decompress ));
 
-  // read 9-byte header to find the size of the entire compressed packet, and
-  // then read remaining packet
+  /*
+   * Read 9-byte header to find the size of the entire
+   * compressed packet, and then read remaining packet.
+   */
+
   while (( c = fread(file_data, 1, 9, ifile)) != 0)
     {
       c  = qlz_size_compressed(file_data);

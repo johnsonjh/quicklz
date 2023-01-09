@@ -29,17 +29,17 @@ main(int argc, char *argv[])
   ifile  = fopen(argv[1], "rb");
   ofile  = fopen(argv[2], "wb");
 
-  // allocate source buffer and read file
+  /* Allocate source buffer and read file */
   fseek(ifile, 0, SEEK_END);
   len  = ftell(ifile);
   fseek(ifile, 0, SEEK_SET);
   src  = (char *)malloc(len);
   fread(src, 1, len, ifile);
 
-  // allocate "uncompressed size" + 400 for the destination buffer
+  /* Allocate "uncompressed size" + 400 for the destination buffer */
   dst = (char *)malloc(len + 400);
 
-  // compress and write result
+  /* Compress and write result */
   len2 = qlz_compress(src, dst, len, state_compress);
   fwrite(dst, len2, 1, ofile);
   fclose(ifile);

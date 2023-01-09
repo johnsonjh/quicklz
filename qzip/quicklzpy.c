@@ -127,7 +127,7 @@ qlz_py_setattr(PyObject *self, char *attrname, PyObject *value)
 int
 qlz_compare(PyObject *self, PyObject *other)
 {
-  // 'is a' comparison
+  /* 'is a' comparison */
   return self == other;
 }
 

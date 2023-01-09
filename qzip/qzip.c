@@ -57,24 +57,37 @@ stream_compress(FILE *ifile, FILE *ofile)
   fd_size    = MAX_BUF_SIZE;
   file_data  = (char *)malloc(fd_size);
 
-  // Allocate MAX_BUF_SIZE + BUF_BUFFER
-  // bytes for the destination buffer.
+  /*
+   * Allocate MAX_BUF_SIZE + BUF_BUFFER
+   * bytes for the destination buffer.
+   */
+
   compressed_size  = MAX_BUF_SIZE + BUF_BUFFER;
   compressed       = (char *)malloc(compressed_size);
 
-  // Allocate and initially zero out the states.
-  // After this, make sure it is preserved across
-  // calls and never modified manually.
+  /*
+   * Allocate and initially zero out the states.
+   * After this, make sure it is preserved across
+   * calls and never modified manually.
+   */
+
   memset(state_compress, 0, sizeof ( qlz_state_compress ));
 
-  // Compress the file using MAX_BUF_SIZE packets.
+  /*
+   * Compress the file using
+   * MAX_BUF_SIZE packets.
+   */
+
   while (( d = fread(file_data, 1, MAX_BUF_SIZE, ifile)) != 0)
     {
       c = qlz_compress(file_data, compressed, d, state_compress);
 
-      // The buffer "compressed" now contains c bytes
-      // which we could have sent directly to a
-      // decompressing site for decompression.
+      /*
+       * The buffer "compressed" now contains c bytes
+       * which we could have sent directly to a
+       * decompressing site for decompression.
+       */
+
       fwrite(compressed, c, 1, ofile);
     }
 
@@ -92,28 +105,41 @@ stream_decompress(FILE *ifile, FILE *ofile)
   qlz_state_decompress * state_decompress
     = (qlz_state_decompress *)malloc(sizeof ( qlz_state_decompress ));
 
-  // A compressed packet can be at most MAX_BUF_SIZE + BUF_BUFFER
-  // bytes if it was compressed with this program.
+  /*
+   * A compressed packet can be at most MAX_BUF_SIZE + BUF_BUFFER
+   * bytes if it was compressed with this program.
+   */
+
   fd_size    = MAX_BUF_SIZE + BUF_BUFFER;
   file_data  = (char *)malloc(fd_size);
 
-  // Allocate decompression buffer.
+  /* Allocate decompression buffer. */
   d_size        = fd_size - BUF_BUFFER;
   decompressed  = (char *)malloc(d_size);
 
-  // Allocate and initially zero out the scratch buffer.
-  // After this, make sure it is preserved across calls
-  // and never modified manually.
+  /*
+   * Allocate and initially zero out the scratch buffer.
+   * After this, make sure it is preserved across calls
+   * and never modified manually.
+   */
+
   memset(state_decompress, 0, sizeof ( qlz_state_decompress ));
 
-  // Read 9-byte header to find the size of the entire
-  // compressed packet, and then read remaining packet.
+  /*
+   * Read 9-byte header to find the size of the entire
+   * compressed packet, and then read remaining packet.
+   */
+
   while (( c = fread(file_data, 1, 9, ifile)) != 0)
     {
       (void)c;
-      // Do we need a bigger decompressed buffer?
-      // If the file was compressed with segments
-      // larger than the default in this program.
+
+      /*
+       * Do we need a bigger decompressed buffer?
+       * If the file was compressed with segments
+       * larger than the default in this program.
+       */
+
       dc = qlz_size_decompressed(file_data);
       if (dc > ( fd_size - BUF_BUFFER ))
         {
@@ -122,7 +148,7 @@ stream_decompress(FILE *ifile, FILE *ofile)
           file_data  = (char *)malloc(fd_size);
         }
 
-      // Do we need a bigger compressed buffer?
+      /* Do we need a bigger compressed buffer? */
       c = qlz_size_compressed(file_data);
       if (c > d_size)
         {
@@ -154,8 +180,11 @@ abort_if_exists(char *fn)
 {
   FILE *f;
 
-  // Check if the file already exists.
-  // If it does, abort.
+  /*
+   * Check if the file already exists.
+   * If it does, abort.
+   */
+
   if (( f = fopen(fn, "rb")) != NULL)
     {
       fprintf(stderr,
@@ -231,15 +260,19 @@ main(int argc, char *argv[])
     {
       if (argc > 1 && file_index == argc)
         {
-          // We ensure that we go through the loop at least once.
-          // If there are files listed as argv, then ignore the
-          // last iteration.
+
+          /*
+           * We ensure that we go through the loop at least once.
+           * If there are files listed as argv, then ignore the
+           * last iteration.
+           */
+
           break;
         }
 
       if (do_compress)
         {
-          // Compress
+          /* Compress */
           if (argc > 1)
             {
               sprintf(fn_buffer,
@@ -270,7 +303,7 @@ main(int argc, char *argv[])
         }
       else
         {
-          // Decompress
+          /* Decompress */
           if (argc > 1)
             {
               bool err = false;

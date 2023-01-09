@@ -26,26 +26,26 @@
 
 # ifndef QLZ_COMPRESSION_LEVEL
 #  define QLZ_COMPRESSION_LEVEL 3
-// #  define QLZ_COMPRESSION_LEVEL 2
-// #  define QLZ_COMPRESSION_LEVEL 1
+/* #  define QLZ_COMPRESSION_LEVEL 2 */
+/* #  define QLZ_COMPRESSION_LEVEL 1 */
 # endif
 
 # ifndef QLZ_STREAMING_BUFFER
 #  define QLZ_STREAMING_BUFFER  0
-// #  define QLZ_STREAMING_BUFFER 100000
-// #  define QLZ_STREAMING_BUFFER 1000000
+/* #  define QLZ_STREAMING_BUFFER 100000  */
+/* #  define QLZ_STREAMING_BUFFER 1000000 */
 # endif
 
-// # define QLZ_MEMORY_SAFE
+/* # define QLZ_MEMORY_SAFE */
 
 # define QLZ_VERSION_MAJOR      1
 # define QLZ_VERSION_MINOR      5
 # define QLZ_VERSION_REVISION   1
 
-// Using size_t, memset() and memcpy()
+/* Using size_t, memset() and memcpy() */
 # include <string.h>
 
-// Verify compression level
+/* Verify compression level */
 # if QLZ_COMPRESSION_LEVEL  != 1 \
    && QLZ_COMPRESSION_LEVEL != 2 \
    && QLZ_COMPRESSION_LEVEL != 3
@@ -55,8 +55,11 @@
 typedef unsigned int ui32;
 typedef unsigned short int ui16;
 
-// Decrease QLZ_POINTERS for level 3 to increase compression speed. Do not
-// touch any other values!
+/*
+ * Decrease QLZ_POINTERS for level 3 to increase compression speed.
+ * Do not touch any other values!
+ */
+
 # if QLZ_COMPRESSION_LEVEL ==   1
 #  define QLZ_POINTERS          1
 #  define QLZ_HASH_VALUES       4096
@@ -68,9 +71,12 @@ typedef unsigned short int ui16;
 #  define QLZ_HASH_VALUES       4096
 # endif /* if QLZ_COMPRESSION_LEVEL == 1 */
 
-// Detect if pointer size is 64-bit. It's not fatal if some 64-bit target is
-// not detected because this is only for adding an optional 64-bit
-// optimization.
+/*
+ * Detect if pointer size is 64-bit. It's not fatal if some
+ * 64-bit target is not detected because this is only for
+ * adding an optional 64-bit optimization.
+ */
+
 # if defined _LP64 || defined __LP64__ || defined __64BIT__ || _ADDR64 \
   || defined _WIN64 || defined __arch64__ || __WORDSIZE == 64          \
   || ( defined __sparc && defined __sparcv9 ) || defined __x86_64      \
@@ -79,7 +85,7 @@ typedef unsigned short int ui16;
 #  define QLZ_PTR_64
 # endif
 
-// hash entry
+/* Hash entry */
 typedef struct
 {
 # if QLZ_COMPRESSION_LEVEL == 1
@@ -104,7 +110,7 @@ typedef struct
 # endif /* if QLZ_COMPRESSION_LEVEL == 1 */
 } qlz_hash_decompress;
 
-// states
+/* States */
 typedef struct
 {
 # if QLZ_STREAMING_BUFFER > 0
@@ -144,7 +150,7 @@ typedef struct
   {
 # endif /* if defined( __cplusplus ) */
 
-// Public functions of QuickLZ
+/* Public functions of QuickLZ */
 size_t qlz_size_decompressed(const char *source);
 size_t qlz_size_compressed(const char *source);
 size_t qlz_compress(const void *source, char *destination, size_t size,

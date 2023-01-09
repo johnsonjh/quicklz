@@ -35,15 +35,21 @@ main(int argc, char *argv[])
 
   file_data  = (char *)malloc(10000);
 
-  // allocate "uncompressed size" + 400 bytes for the destination buffer where
-  // "uncompressed size" = 10000 in worst case in this sample demo
+  /*
+   * Allocate "uncompressed size" + 400 bytes for the destination buffer
+   * where "uncompressed size" = 10000 in worst case in this sample demo.
+   */
+
   compressed = (char *)malloc(10000 + 400);
 
-  // allocate and initially zero out the states. After this, make sure it is
-  // preserved across calls and never modified manually
+  /*
+   * Allocate and initially zero out the states. After this, make
+   * sure it is preserved across calls and never modified manually.
+   */
+
   memset(state_compress, 0, sizeof ( qlz_state_compress ));
 
-  // compress the file in random sized packets
+  /* Compress the file in random sized packets */
   while (( d = fread(file_data, 1, rand() % 10000 + 1, ifile)) != 0)
     {
       c = qlz_compress(file_data, compressed, d, state_compress);
@@ -52,8 +58,11 @@ main(int argc, char *argv[])
         (unsigned int)d,
         (unsigned int)c);
 
-      // the buffer "compressed" now contains c bytes which we could have sent
-      // directly to a decompressing site for decompression
+      /*
+       * The buffer "compressed" now contains c bytes which we could have sent
+       * directly to a decompressing site for decompression
+       */
+
       fwrite(compressed, c, 1, ofile);
     }
   fclose(ifile);
