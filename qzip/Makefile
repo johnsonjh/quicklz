@@ -61,6 +61,20 @@ python quicklz.so: quicklz.o distutils
 	env CFLAGS="$(CLFLAGS) -Wno-int-conversion" $(PYTHON) distutils build
 
 ###############################################################################
+# Benchmark target
+
+.PHONY: bench perf
+bench perf: $(OUTPUT) quicklz.c
+	+@$(MAKE) q_bench --no-print-directory ||      \
+	  {                                            \
+	     printf '\n  %s\n\n'                       \
+	       "***** ERROR!! BENCH FAILED!! *****" && \
+	     $(RM) /tmp/zero.qz?   > /dev/null 2>&1 && \
+	     $(RM) /tmp/random.qz? > /dev/null 2>&1 && \
+	     exit 1;                                   \
+	  }; exit 0
+
+###############################################################################
 # Test target
 
 .PHONY: test check
@@ -88,6 +102,81 @@ q_test: quicklz.c
 	      cksum | grep -q "^$${CKSUM}$$"
 	-@printf '\n  %s\n\n' \
 	  "***** Tests completed successfully! *****"
+
+###############################################################################
+# Benchmark script
+
+.PHONY: q_bench
+q_bench: quicklz.c
+	-@printf '\n  %s\n\n' "***** Starting benchmarking tests *****"
+	-@printf '  %s\n\n' " ##### Compression benchmark #####"
+	-@printf ' %s\n'   "  ==> Benchmark: /dev/urandom"
+	-@sync > /dev/null 2>&1
+	+@dd if="/dev/urandom" bs="1000000" count="4096"      2> /dev/null | \
+	  pv -erc -i "0.1" -s "4096000000" -N "         Level 1" -B "1024" | \
+	    ./qzip1 > /tmp/random.qz1
+	-@sync > /dev/null 2>&1
+	+@dd if="/dev/urandom" bs="1000000" count="2048"      2> /dev/null | \
+	  pv -erc -i "0.1" -s "2048000000" -N "         Level 2" -B "1024" | \
+	    ./qzip2 > /tmp/random.qz2
+	-@sync > /dev/null 2>&1
+	+@dd if="/dev/urandom" bs="1000000" count="1024"      2> /dev/null | \
+	  pv -erc -i "0.1" -s "1024000000" -N "         Level 3" -B "1024" | \
+	    ./qzip3 > /tmp/random.qz3
+	-@sync > /dev/null 2>&1
+	-@printf '\n %s\n' "  ==> Benchmark: /dev/zero"
+	+@dd if="/dev/zero" bs="1000000" count="4096"         2> /dev/null | \
+	  pv -erc -i "0.1" -s "4096000000" -N "         Level 1" -B "1024" | \
+	    ./qzip1 > /tmp/zero.qz1
+	-@sync > /dev/null 2>&1
+	+@dd if="/dev/zero" bs="1000000" count="2048"         2> /dev/null | \
+	  pv -erc -i "0.1" -s "2048000000" -N "         Level 2" -B "1024" | \
+	    ./qzip2 > /tmp/zero.qz2
+	-@sync > /dev/null 2>&1
+	+@dd if="/dev/zero" bs="1000000" count="1024"         2> /dev/null | \
+	  pv -erc -i "0.1" -s "1024000000" -N "         Level 3" -B "1024" | \
+	    ./qzip3 > /tmp/zero.qz3
+	-@sync > /dev/null 2>&1
+	-@printf '\n  %s\n\n' " ##### Decompression benchmark #####"
+	-@printf ' %s\n'   "  ==> Benchmark: /dev/urandom"
+	-@cat "/tmp/random.qz1" > /dev/null 2>&1
+	+@dd if="/tmp/random.qz1" bs="1000000"              2> /dev/null | \
+	                                            ./qcat1 2> /dev/null | \
+	  pv -erc -i "0.1" -s "4096000000" -N "         Level 1" -B "1024" \
+	    > /dev/null
+	-@$(RM) "/tmp/random.qz1"
+	-@cat "/tmp/random.qz2" > /dev/null 2>&1
+	+@dd if="/tmp/random.qz2" bs="1000000"              2> /dev/null | \
+	                                            ./qcat2 2> /dev/null | \
+	  pv -erc -i "0.1" -s "2048000000" -N "         Level 2" -B "1024" \
+	    > /dev/null
+	-@$(RM) "/tmp/random.qz2"
+	-@cat "/tmp/random.qz3" > /dev/null 2>&1
+	+@dd if="/tmp/random.qz3" bs="1000000"              2> /dev/null | \
+	                                            ./qcat3 2> /dev/null | \
+	  pv -erc -i "0.1" -s "1024000000" -N "         Level 3" -B "1024" \
+	    > /dev/null
+	-@$(RM) "/tmp/random.qz3"
+	-@printf '\n %s\n' "  ==> Benchmark: /dev/zero"
+	-@cat "/tmp/zero.qz1" > /dev/null 2>&1
+	+@dd if="/tmp/zero.qz1" bs="1000000"                2> /dev/null | \
+	                                            ./qcat1 2> /dev/null | \
+	  pv -erc -i "0.1" -s "4096000000" -N "         Level 1" -B "1024" \
+	    > /dev/null
+	-@$(RM) "/tmp/zero.qz1"
+	-@cat "/tmp/zero.qz2" > /dev/null 2>&1
+	+@dd if="/tmp/zero.qz2" bs="1000000"                2> /dev/null | \
+	                                            ./qcat2 2> /dev/null | \
+	  pv -erc -i "0.1" -s "2048000000" -N "         Level 2" -B "1024" \
+	    > /dev/null
+	-@$(RM) "/tmp/zero.qz2"
+	-@cat "/tmp/zero.qz3" > /dev/null 2>&1
+	+@dd if="/tmp/zero.qz3" bs="1000000"                2> /dev/null | \
+	                                            ./qcat3 2> /dev/null | \
+	  pv -erc -i "0.1" -s "1024000000" -N "         Level 3" -B "1024" \
+	    > /dev/null
+	-@$(RM) "/tmp/zero.qz3"
+	-@printf '\n   %s\n\n' "***** Benchmarking tests completed! *****"
 
 ###############################################################################
 # Clean-up
