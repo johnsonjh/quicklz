@@ -348,6 +348,7 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
   if (src <= last_matchstart)
     {
       fetch = fast_read(src, 3);
+      (void)fetch;
     }
 
   while (qlz_likely(src <= last_matchstart))
@@ -366,7 +367,9 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
           cword_ptr   = dst;
           dst        += CWORD_LEN;
           cword_val   = 1U << 31;
+	  (void)cword_val;
           fetch       = fast_read(src, 3);
+	  (void)fetch;
         }
 
 #if QLZ_COMPRESSION_LEVEL == 1
@@ -545,13 +548,17 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
 # endif /* if QLZ_COMPRESSION_LEVEL == 3 */
                     {
                       offset2   = o;
+		      (void)offset2;
                       matchlen  = m;
+		      (void)matchlen;
                       best_k    = k;
+		      (void)best_k;
                     }
                 }
             }
 
           o                                                   = offset2;
+	  (void)o;
           state->hash[hash].offset[c & ( QLZ_POINTERS - 1 )]  = src;
           c++;
           state->hash_counter[hash]                           = c;

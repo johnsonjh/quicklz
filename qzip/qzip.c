@@ -110,6 +110,7 @@ stream_decompress(FILE *ifile, FILE *ofile)
   // compressed packet, and then read remaining packet.
   while (( c = fread(file_data, 1, 9, ifile)) != 0)
     {
+      (void)c;
       // Do we need a bigger decompressed buffer?
       // If the file was compressed with segments
       // larger than the default in this program.
