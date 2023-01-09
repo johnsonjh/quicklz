@@ -1,7 +1,16 @@
-// Sample demo for QuickLZ 1.5.x
+/* SPDX-License-Identifier: GPL-1.0-only OR GPL-2.0-only OR GPL-3.0-only */
 
-// Remember to define QLZ_COMPRESSION_LEVEL to the same value for the
-// compressor and decompressor
+/* Sample demo for QuickLZ 1.5.x */
+
+/*
+ * Copyright (c) 2006-2011 Lasse Mikkel Reinhold <lar@quicklz.com>
+ * Copyright (c) 2023 Jeffrey H. Johnson <trnsz@pobox.com>
+ */
+
+/*
+ * Remember to define QLZ_COMPRESSION_LEVEL to the
+ * same value for the compressor and decompressor.
+ */
 
 #include <stdio.h>
 #include <stdlib.h>

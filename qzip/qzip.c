@@ -1,3 +1,10 @@
+/* SPDX-License-Identifier: GPL-1.0-only OR GPL-2.0-only OR GPL-3.0-only */
+
+/*
+ * Copyright (c) 2006-2011 Lasse Mikkel Reinhold <lar@quicklz.com>
+ * Copyright (c) 2023 Jeffrey H. Johnson <trnsz@pobox.com>
+ */
+
 /*
  * qzip -- command-line tool for compressing
  *          and decompressing quicklz files.

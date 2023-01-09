@@ -6,6 +6,10 @@ The user of this class doesn't have to worry about compression,
 but random access is not allowed.
 
 QuickLZ is hosted at U{http://www.quicklz.com}
+
+SPDX-License-Identifier: GPL-1.0-only OR GPL-2.0-only OR GPL-3.0-only
+Copyright (c) 2006-2011 Lasse Mikkel Reinhold <lar@quicklz.com>
+Copyright (c) 2023 Jeffrey H. Johnson <trnsz@pobox.com>
 """
 
 from __future__ import absolute_import

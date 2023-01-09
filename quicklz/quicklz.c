@@ -1,12 +1,19 @@
-// QuickLZ - Fast data compression library
-// Copyright (C) 2006-2011 Lasse Mikkel Reinhold
-// lar@quicklz.com
-//
-// QuickLZ can be used for free under the GPL 1, 2 or 3 license (where anything
-// released into public must be open source) or under a commercial license if
-// such has been acquired (see http://www.quicklz.com/order.html). The
-// commercial license does not cover derived or ported versions created by
-// third parties under GPL.
+/* SPDX-License-Identifier: GPL-1.0-only OR GPL-2.0-only OR GPL-3.0-only */
+
+/*
+ * QuickLZ - Fast data compression library
+ *
+ * Copyright (c) 2006-2011 Lasse Mikkel Reinhold <lar@quicklz.com>
+ * Copyright (c) 2023 Jeffrey H. Johnson <trnsz@pobox.com>
+ *
+ * QuickLZ can be used for free under the GPL 1, 2 or 3 license (where anything
+ * released into public must be open source) or under a commercial license if
+ * such has been acquired (see http://www.quicklz.com/order.html). The
+ * commercial license does not cover derived or ported versions created by
+ * third parties under GPL.
+ */
+
+/* QuickLZ 1.5.1 BETA 7 */
 
 #include "quicklz.h"
 #if defined _MSC_VER
