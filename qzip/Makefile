@@ -17,12 +17,10 @@ all:    $(OUTPUT)
 ###############################################################################
 # Configuration: Build
 
-ifdef SAFE
-  SFFLAGS := -DQLZ_MEMORY_SAFE=1
-endif
 OPFLAGS   ?= -Ofast
 QZFLAGS   ?= -DQLZ_STREAMING_BUFFER=1000000
-CLFLAGS   ?= $(OPFLAGS) -flto=auto -march=native $(SFFLAGS)
+SFFLAGS   := -DQLZ_MEMORY_SAFE=1
+CLFLAGS   ?= $(OPFLAGS) -flto=auto -march=native
 
 ###############################################################################
 # Configuration: Tools
@@ -45,8 +43,9 @@ qcat_3: ; +@$(MAKE) --no-print-directory qcat3 qzip3 qunzip3 LEVEL=3
 
 qcat$(LEVEL): qzip.c quicklz.c quicklz.h
 	-@printf '\n  %s\n\n' "***** Building level $(LEVEL) binary *****"
-	$(CC) $(CLFLAGS)     \
+	$(CC) $(CLFLAGS)      \
 		$(QZFLAGS)  \
+		$(SFFLAGS)             \
 		-DQLZ_COMPRESSION_LEVEL=$(LEVEL)       \
 		qzip.c quicklz.c -o qcat$(LEVEL)
 

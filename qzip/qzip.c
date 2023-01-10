@@ -368,7 +368,7 @@ main(int argc, char *argv[])
                 {
                   strncpy(fn_buffer,
                     argv[file_index],
-                    strlen(argv[file_index]) - 3);
+                    strlen(argv[file_index]) - 4);
                   snprintf(tmp_fn_buffer, sizeof(tmp_fn_buffer) - 1,
                     "%s.%d", fn_buffer, getpid());
                   abort_if_exists(fn_buffer);
