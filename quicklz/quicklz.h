@@ -39,8 +39,8 @@
 /* Default to memory safety */
 # ifdef QLZ_MEMORY_SAFE
 #  undef QLZ_MEMORY_SAFE
-#  define QLZ_MEMORY_SAFE       1
 # endif /* ifdef QLZ_MEMORY_SAFE */
+# define QLZ_MEMORY_SAFE        1
 
 # define QLZ_VERSION_MAJOR      1
 # define QLZ_VERSION_MINOR      5
