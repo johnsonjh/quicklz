@@ -10,3 +10,5 @@ qzip?
 qunzip
 qunzip?
 *.o
+log.txt
+compile_commands.json

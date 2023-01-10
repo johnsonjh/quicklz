@@ -22,6 +22,17 @@
 
 #include <Python.h>
 
+#undef FREE
+#ifdef TESTING
+# define FREE(p) free(p)
+#else
+# define FREE(p) do  \
+  {                  \
+    free((p));       \
+    (p) = NULL;      \
+  } while(0)
+#endif /* ifdef TESTING */
+
 #define QLZ_COMPRESSION_LEVEL 3
 #define QLZ_STREAMING_BUFFER  1000000
 #include "quicklz.h"
@@ -62,7 +73,7 @@ qlz_state_compress_NEW(void)
 void
 qlz_state_compress_dealloc(PyObject *self)
 {
-  free(((qlz_state_compress_ *)self )->value);
+  FREE(((qlz_state_compress_ *)self )->value);
   PyMem_DEL(self);
 }
 
@@ -99,7 +110,7 @@ qlz_state_decompress_NEW(void)
 void
 qlz_state_decompress_dealloc(PyObject *self)
 {
-  free(((qlz_state_decompress_ *)self )->value);
+  FREE(((qlz_state_decompress_ *)self )->value);
   PyMem_DEL(self);
 }
 
@@ -280,7 +291,7 @@ qlz_compress_py(PyObject *self, PyObject *args)
         buffer_length,
         ((qlz_state_compress_ *)state )->value);
       result = Py_BuildValue("s#", compressed_buffer, size_compressed);
-      free(compressed_buffer);
+      FREE(compressed_buffer);
     }
 
       /*
@@ -318,7 +329,7 @@ qlz_decompress_py(PyObject *self, PyObject *args)
         ((qlz_state_decompress_ *)state )->value);
 
       result = Py_BuildValue("s#", decompressed_buffer, size_decompressed);
-      free(decompressed_buffer);
+      FREE(decompressed_buffer);
     }
 
       /*

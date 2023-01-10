@@ -63,7 +63,7 @@ qlz_get_setting(int setting)
   switch (setting)
     {
     case 0:
-      return QLZ_COMPRESSION_LEVEL;
+      return QLZ_COMPRESSION_LEVEL;  //-V1037
 
     case 1:
       return sizeof ( qlz_state_compress );
@@ -84,7 +84,7 @@ qlz_get_setting(int setting)
 
 #endif /* ifdef QLZ_MEMORY_SAFE */
         case 7:
-          return QLZ_VERSION_MAJOR;
+          return QLZ_VERSION_MAJOR; //-V1037
 
         case 8:
           return QLZ_VERSION_MINOR;
@@ -223,7 +223,7 @@ fast_write(ui32 f, void *dst, size_t bytes)
     switch (bytes)
       {
       case 4:
-        *((ui32 *)dst ) = f;
+        *((ui32 *)dst ) = f;  //-V1037
         return;
 
       case 3:
@@ -428,8 +428,7 @@ qlz_compress_core(const unsigned char *source, unsigned char *destination,
                         size_t  remaining
                             = q > 255 ? 255 : q;
                         matchlen += sizeof ( c );
-                        while (
-                                src[matchlen] == o[matchlen]
+                        while (src[matchlen] == o[matchlen] //-V781
                                  && matchlen < remaining)
                           {
                             matchlen++;

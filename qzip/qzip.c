@@ -14,6 +14,17 @@
 #include <stdlib.h>
 #include <unistd.h>
 
+#undef FREE
+#ifdef TESTING
+# define FREE(p) free(p)
+#else
+# define FREE(p) do  \
+  {                  \
+    free((p));       \
+    (p) = NULL;      \
+  } while(0)
+#endif /* ifdef TESTING */
+
 #include "quicklz.h"
 
 #define STRINGIFY(x) #x
@@ -27,7 +38,7 @@
 #define QLZ_COMPRESSION_LEVEL_STRING TOSTRING(QLZ_COMPRESSION_LEVEL)
 
 /* 1 MB Buffer */
-#define MAX_BUF_SIZE   1024 * 1024
+#define MAX_BUF_SIZE   (1024 * 1024)
 #define BUF_BUFFER     400
 
 #define bool           int
@@ -71,12 +82,18 @@ stream_compress(FILE *ifile, FILE *ofile)
    * calls and never modified manually.
    */
 
+  if (!state_compress)
+    abort();
+
   memset(state_compress, 0, sizeof ( qlz_state_compress ));
 
   /*
    * Compress the file using
    * MAX_BUF_SIZE packets.
    */
+
+  if (!file_data)
+    abort();
 
   while (( d = fread(file_data, 1, MAX_BUF_SIZE, ifile)) != 0)
     {
@@ -88,12 +105,15 @@ stream_compress(FILE *ifile, FILE *ofile)
        * decompressing site for decompression.
        */
 
+      if (!compressed)
+        abort();
+
       fwrite(compressed, c, 1, ofile);
     }
 
-  free(state_compress);
-  free(compressed);
-  free(file_data);
+  FREE(state_compress);
+  FREE(compressed);
+  FREE(file_data);
   return 0;
 }
 
@@ -123,12 +143,18 @@ stream_decompress(FILE *ifile, FILE *ofile)
    * and never modified manually.
    */
 
+  if (!state_decompress)
+    abort();
+
   memset(state_decompress, 0, sizeof ( qlz_state_decompress ));
 
   /*
    * Read 9-byte header to find the size of the entire
    * compressed packet, and then read remaining packet.
    */
+
+  if (!file_data)
+    abort();
 
   while (( c = fread(file_data, 1, 9, ifile)) != 0)
     {
@@ -143,28 +169,33 @@ stream_decompress(FILE *ifile, FILE *ofile)
       dc = qlz_size_decompressed(file_data);
       if (dc > ( fd_size - BUF_BUFFER ))
         {
-          free(file_data);
+          FREE(file_data);
           fd_size    = dc + BUF_BUFFER;
           file_data  = (char *)malloc(fd_size);
         }
 
       /* Do we need a bigger compressed buffer? */
+      if (!file_data)
+        abort();
+
       c = qlz_size_compressed(file_data);
       if (c > d_size)
         {
-          free(decompressed);
+          FREE(decompressed);
           d_size        = c;
           decompressed  = (char *)malloc(d_size);
         }
 
       fread(file_data + 9, 1, c - 9, ifile);
       d = qlz_decompress(file_data, decompressed, state_decompress);
+      if (!decompressed)
+	abort();
       fwrite(decompressed, d, 1, ofile);
     }
 
-  free(decompressed);
-  free(state_decompress);
-  free(file_data);
+  FREE(decompressed);
+  FREE(state_decompress);
+  FREE(file_data);
   return 0;
 }
 
@@ -275,10 +306,10 @@ main(int argc, char *argv[])
           /* Compress */
           if (argc > 1)
             {
-              sprintf(fn_buffer,
+              snprintf(fn_buffer, sizeof(fn_buffer) - 1,
                       "%s.qz" QLZ_COMPRESSION_LEVEL_STRING,
                       argv[file_index]);
-              sprintf(tmp_fn_buffer,
+              snprintf(tmp_fn_buffer, sizeof(tmp_fn_buffer) - 1,
                       "%s.qz" QLZ_COMPRESSION_LEVEL_STRING ".%d",
                       argv[file_index], getpid());
 
@@ -314,10 +345,11 @@ main(int argc, char *argv[])
 
               if (!err)
                 {
-                  strcpy(
-                    tmp_fn_buffer,
-                    argv[file_index] + strlen(argv[file_index]) - 3);
-                  if (strcmp(tmp_fn_buffer, ".qz") != 0)
+                  strncpy(tmp_fn_buffer,
+                    argv[file_index] + strlen(argv[file_index]) - 4,
+                    sizeof(tmp_fn_buffer));
+                  if (strcmp(tmp_fn_buffer,
+                        ".qz" QLZ_COMPRESSION_LEVEL_STRING) != 0)
                     {
                       err = true;
                     }
@@ -326,8 +358,8 @@ main(int argc, char *argv[])
               if (err)
                 {
                   fprintf(stderr,
-                    "%s: File does not end in '.qz': '%s'\n",
-                    progname,
+                    "%s: File does not end in '.qz%s': '%s'\n",
+                    progname, QLZ_COMPRESSION_LEVEL_STRING,
                     argv[file_index]);
                   exit(1);
                 }
@@ -337,7 +369,8 @@ main(int argc, char *argv[])
                   strncpy(fn_buffer,
                     argv[file_index],
                     strlen(argv[file_index]) - 3);
-                  sprintf(tmp_fn_buffer, "%s.%d", fn_buffer, getpid());
+                  snprintf(tmp_fn_buffer, sizeof(tmp_fn_buffer) - 1,
+                    "%s.%d", fn_buffer, getpid());
                   abort_if_exists(fn_buffer);
                 }
 
